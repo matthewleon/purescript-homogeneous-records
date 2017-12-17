@@ -17,7 +17,6 @@ import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Type.Row (class RowLacks, class RowToList, Cons, Nil, RLProxy(..))
 import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 
--- | Create a map from a homogeneous record (all attributes have the same type).
 foreign import toStringMap :: forall r t. Homogeneous r t => Record r -> StrMap t
 
 mapValues
