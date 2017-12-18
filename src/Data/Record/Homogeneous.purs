@@ -1,5 +1,6 @@
 module Data.Record.Homogeneous
   ( toStringMap
+
   , mapValues
   , class MapValues
   , mapValuesImpl
@@ -7,6 +8,10 @@ module Data.Record.Homogeneous
   , mapWithIndex
   , class MapWithIndex
   , mapWithIndexImpl
+
+  , foldlValues
+  , class FoldlValues
+  , foldlValuesImpl
   ) where
 
 import Control.Category (id, (<<<))
@@ -113,3 +118,46 @@ instance mapWithIndexNil
   => MapWithIndex Nil row () fieldType fieldType'
   where
     mapWithIndexImpl _ _ _ = id
+
+foldlValues
+  :: forall b r t fields
+   . RowToList r fields
+  => FoldlValues fields r t
+  => (b -> t -> b)
+  -> b
+  -> Record r
+  -> b
+foldlValues = foldlValuesImpl (RLProxy :: RLProxy fields)
+
+class ( Homogeneous row fieldType
+      , HomogeneousRowList rl fieldType
+      )
+   <= FoldlValues rl row fieldType
+    | row -> fieldType
+  where
+    foldlValuesImpl
+      :: forall b
+       . RLProxy rl
+      -> (b -> fieldType -> b)
+      -> b
+      -> Record row
+      -> b
+
+instance foldlValuesCons ::
+  ( FoldlValues tail row fieldType
+  , Homogeneous row fieldType
+  , IsSymbol name
+  , RowCons name fieldType tailRow row
+  ) => FoldlValues (Cons name fieldType tail) row fieldType
+  where
+    foldlValuesImpl _ f acc record = foldlValuesImpl tailProxy f acc' record
+        where
+          tailProxy = (RLProxy :: RLProxy tail)
+          value = get (SProxy :: SProxy name) record
+          acc' = f acc value
+
+instance foldlValuesNil
+  :: Homogeneous row fieldType
+  => FoldlValues Nil row fieldType
+  where
+    foldlValuesImpl _ _ acc _ = acc

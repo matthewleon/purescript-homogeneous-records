@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Data.Record (equal)
-import Data.Record.Homogeneous (mapValues, mapWithIndex, toStringMap)
+import Data.Record.Homogeneous (mapValues, mapWithIndex, foldlValues, toStringMap)
 import Data.StrMap as SM
 import Data.Tuple (Tuple(..))
 import Test.Assert (ASSERT, assert')
@@ -17,3 +17,5 @@ main = do
     mapValues (_ + 1) {a: 1, b: 2} `equal` {a: 2, b: 3}
   assert' "mapWithIndex" $
     mapWithIndex (\l v -> l <> show v) {a: 1, b: 2} `equal` {a: "a1", b: "b2"}
+  assert' "foldlValues" $
+    foldlValues (+) 0 {a: 1, b: 2, c: 3} == 6
