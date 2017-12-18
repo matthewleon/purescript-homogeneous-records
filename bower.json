@@ -8,8 +8,7 @@
   ],
   "dependencies": {
     "purescript-record": "^0.2.5",
-    "purescript-typelevel-prelude": "matthewleon/purescript-typelevel-prelude#homogeneous-sp",
-    "purescript-maps": "^3.6.0"
+    "purescript-typelevel-prelude": "matthewleon/purescript-typelevel-prelude#homogeneous-sp"
   },
   "devDependencies": {
     "purescript-assert": "^3.0.0"
