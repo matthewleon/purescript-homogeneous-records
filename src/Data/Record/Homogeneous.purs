@@ -12,6 +12,10 @@ module Data.Record.Homogeneous
   , foldlValues
   , class FoldlValues
   , foldlValuesImpl
+
+  , foldrValues
+  , class FoldrValues
+  , foldrValuesImpl
   ) where
 
 import Control.Category (id, (<<<))
@@ -161,3 +165,46 @@ instance foldlValuesNil
   => FoldlValues Nil row fieldType
   where
     foldlValuesImpl _ _ acc _ = acc
+
+-- | Not stack safe, but realistically this shouldn't matter on records.
+foldrValues
+  :: forall b r t fields
+   . RowToList r fields
+  => FoldrValues fields r t
+  => (t -> b -> b)
+  -> b
+  -> Record r
+  -> b
+foldrValues = foldrValuesImpl (RLProxy :: RLProxy fields)
+
+class ( Homogeneous row fieldType
+      , HomogeneousRowList rl fieldType
+      )
+   <= FoldrValues rl row fieldType
+    | row -> fieldType
+  where
+    foldrValuesImpl
+      :: forall b
+       . RLProxy rl
+      -> (fieldType -> b -> b)
+      -> b
+      -> Record row
+      -> b
+
+instance foldrValuesCons ::
+  ( FoldrValues tail row fieldType
+  , Homogeneous row fieldType
+  , IsSymbol name
+  , RowCons name fieldType tailRow row
+  ) => FoldrValues (Cons name fieldType tail) row fieldType
+  where
+    foldrValuesImpl _ f b rec = f value (foldrValuesImpl tailProxy f b rec)
+        where
+          tailProxy = (RLProxy :: RLProxy tail)
+          value = get (SProxy :: SProxy name) rec
+
+instance foldrValuesNil
+  :: Homogeneous row fieldType
+  => FoldrValues Nil row fieldType
+  where
+    foldrValuesImpl _ _ b _ = b
