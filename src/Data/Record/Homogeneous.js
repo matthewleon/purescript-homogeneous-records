@@ -1,5 +1,3 @@
-exports.toStringMap = function() {
-  return function (r) {
-    return r;
-  };
+exports.toStringMapImpl = function(r) {
+  return r;
 };

@@ -17,7 +17,10 @@ import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Type.Row (class RowLacks, class RowToList, Cons, Nil, RLProxy(..))
 import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 
-foreign import toStringMap :: forall r t. Homogeneous r t => Record r -> StrMap t
+toStringMap :: forall r t. Homogeneous r t => Record r -> StrMap t
+toStringMap = toStringMapImpl
+
+foreign import toStringMapImpl :: forall r t. Record r -> StrMap t
 
 mapValues
   :: forall r t r' t' fields
