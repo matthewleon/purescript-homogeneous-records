@@ -1,5 +1,7 @@
 module Data.Record.Homogeneous
-  ( mapValues
+  ( valuesToUnfoldable
+
+  , mapValues
   , class MapValues
   , mapValuesImpl
 
@@ -14,14 +16,41 @@ module Data.Record.Homogeneous
   , foldrValues
   , class FoldrValues
   , foldrValuesImpl
+
+  , foldrValuesLazy
+  , class FoldrValuesLazy
+  , foldrValuesLazyImpl
   ) where
 
-import Control.Category (id, (<<<))
+import Prelude
+
+import Control.Lazy as Z
+import Data.Maybe (Maybe(..))
 import Data.Record (get)
 import Data.Record.Builder (Builder, build, insert)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Tuple (Tuple(..))
+import Data.Unfoldable (class Unfoldable, unfoldr)
 import Type.Row (class RowLacks, class RowToList, Cons, Nil, RLProxy(..))
 import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
+
+valuesToUnfoldable
+  :: forall r fields f v
+   . RowToList r fields
+  => FoldrValuesLazy fields r v
+  => Unfoldable f
+  => Record r
+  -> f v
+valuesToUnfoldable r = unfoldr (\(LazyTupleList f) -> f unit) lazyTupleList
+  where
+  lazyTupleList = foldrValuesLazy
+    (\v f -> (LazyTupleList \_ -> Just (Tuple v f)))
+    (LazyTupleList (\_ -> Nothing))
+    r
+
+newtype LazyTupleList v =
+  LazyTupleList (Unit -> Maybe (Tuple v (LazyTupleList v)))
+derive newtype instance lazyLazyTupleList :: Z.Lazy (LazyTupleList v)
 
 mapValues
   :: forall r t r' t' fields
@@ -200,3 +229,48 @@ instance foldrValuesNil
   => FoldrValues Nil row fieldType
   where
     foldrValuesImpl _ _ b _ = b
+
+foldrValuesLazy
+  :: forall b r t fields
+   . Z.Lazy b
+  => RowToList r fields
+  => FoldrValuesLazy fields r t
+  => (t -> b -> b)
+  -> b
+  -> Record r
+  -> b
+foldrValuesLazy = foldrValuesLazyImpl (RLProxy :: RLProxy fields)
+
+class ( Homogeneous row fieldType
+      , HomogeneousRowList rl fieldType
+      )
+   <= FoldrValuesLazy rl row fieldType
+    | row -> fieldType
+  where
+    foldrValuesLazyImpl
+      :: forall b
+       . Z.Lazy b
+      => RLProxy rl
+      -> (fieldType -> b -> b)
+      -> b
+      -> Record row
+      -> b
+
+instance foldrValuesLazyCons ::
+  ( FoldrValuesLazy tail row fieldType
+  , Homogeneous row fieldType
+  , IsSymbol name
+  , RowCons name fieldType tailRow row
+  ) => FoldrValuesLazy (Cons name fieldType tail) row fieldType
+  where
+    foldrValuesLazyImpl _ f b rec = Z.defer \_ ->
+      f value (foldrValuesLazyImpl tailProxy f b rec)
+      where
+        tailProxy = (RLProxy :: RLProxy tail)
+        value = get (SProxy :: SProxy name) rec
+
+instance foldrValuesLazyNil
+  :: Homogeneous row fieldType
+  => FoldrValuesLazy Nil row fieldType
+  where
+    foldrValuesLazyImpl _ _ b _ = b

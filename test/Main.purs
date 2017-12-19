@@ -3,8 +3,9 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Eff (Eff)
+import Data.List as L
 import Data.Record (equal)
-import Data.Record.Homogeneous (mapValues, mapWithIndex, foldlValues, foldrValues)
+import Data.Record.Homogeneous (valuesToUnfoldable, mapValues, mapWithIndex, foldlValues, foldrValues)
 import Test.Assert (ASSERT, assert')
 
 main :: Eff (assert :: ASSERT) Unit
@@ -17,3 +18,5 @@ main = do
     foldlValues (+) 0 {a: 1, b: 2, c: 3} == 6
   assert' "foldrValues" $
     foldrValues (+) 0 {a: 1, b: 2, c: 3} == 6
+  assert' "valuesToUnfoldable" $
+    valuesToUnfoldable {a: 1, b: 2, c: 3} == L.fromFoldable [1, 2, 3]
