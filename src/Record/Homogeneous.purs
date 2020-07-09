@@ -1,4 +1,4 @@
-module Data.Record.Homogeneous
+module Record.Homogeneous
   ( valuesToUnfoldable
 
   , mapValues
@@ -26,13 +26,15 @@ import Prelude
 
 import Control.Lazy as Z
 import Data.Maybe (Maybe(..))
-import Data.Record (get)
-import Data.Record.Builder (Builder, build, insert)
+import Record (get)
+import Record.Builder (Builder, build, insert)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (class Unfoldable, unfoldr)
-import Type.Row (class RowLacks, class RowToList, Cons, Nil, RLProxy(..))
+import Type.Row (class Lacks)
+import Type.RowList (class RowToList, RLProxy(..))
 import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
+import Prim.RowList
 
 valuesToUnfoldable
   :: forall r fields f v
@@ -69,7 +71,7 @@ class ( Homogeneous row fieldType
     | rl -> row'
     , row' -> fieldType'
     , row -> fieldType
-  where 
+  where
     mapValuesImpl
       :: RLProxy rl
       -> (fieldType -> fieldType')
@@ -82,7 +84,7 @@ instance mapValuesCons ::
   , Homogeneous row' fieldType'
   , IsSymbol name
   , RowCons name fieldType tailRow row
-  , RowLacks name tailRow'
+  , Lacks name tailRow'
   , RowCons name fieldType' tailRow' row'
   ) => MapValues (Cons name fieldType tail) row row' fieldType fieldType'
   where
@@ -115,7 +117,7 @@ class ( Homogeneous row fieldType
     | rl -> row'
     , row' -> fieldType'
     , row -> fieldType
-  where 
+  where
     mapWithIndexImpl
       :: RLProxy rl
       -> (String -> fieldType -> fieldType')

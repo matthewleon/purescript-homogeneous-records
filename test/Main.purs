@@ -2,13 +2,13 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
+import Effect
 import Data.List as L
-import Data.Record (equal)
-import Data.Record.Homogeneous (valuesToUnfoldable, mapValues, mapWithIndex, foldlValues, foldrValues)
-import Test.Assert (ASSERT, assert')
+import Record (equal)
+import Record.Homogeneous (valuesToUnfoldable, mapValues, mapWithIndex, foldlValues, foldrValues)
+import Test.Assert (assert')
 
-main :: Eff (assert :: ASSERT) Unit
+main :: Effect Unit
 main = do
   assert' "mapValues" $
     mapValues (_ + 1) {a: 1, b: 2} `equal` {a: 2, b: 3}
