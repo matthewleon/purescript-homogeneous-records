@@ -2,10 +2,12 @@ module Record.Homogeneous
   ( foldlValues
   , class FoldlValues
   , foldlValuesImpl
+  , foldMapValuesL
 
   , foldlValuesWithIndex
   , class FoldlValuesWithIndex
   , foldlValuesWithIndexImpl
+  , foldMapValuesWithIndexL
   ) where
 
 import Prelude
