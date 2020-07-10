@@ -8,6 +8,8 @@ module Record.Homogeneous
   , foldlValuesWithIndexImpl
   ) where
 
+import Prelude
+
 import Record (get) as Record
 import Type.Prelude (class IsSymbol, RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
 import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
@@ -23,6 +25,16 @@ foldlValues
   -> Record row
   -> accum
 foldlValues = foldlValuesImpl (RLProxy :: RLProxy rowList)
+
+foldMapValuesL
+  :: forall accum row fieldType rowList
+   . RL.RowToList row rowList
+  => FoldlValues rowList row fieldType
+  => Monoid accum
+  => (fieldType -> accum)
+  -> Record row
+  -> accum
+foldMapValuesL f = foldlValues (\acc x -> acc <> f x) mempty
 
 class
   ( Homogeneous row fieldType
@@ -74,6 +86,16 @@ foldlValuesWithIndex
   -> Record row
   -> accum
 foldlValuesWithIndex = foldlValuesWithIndexImpl (RLProxy :: RLProxy rowList)
+
+foldMapValuesWithIndexL
+  :: forall accum row fieldType rowList
+   . RL.RowToList row rowList
+  => FoldlValuesWithIndex rowList row fieldType
+  => Monoid accum
+  => (String -> fieldType -> accum)
+  -> Record row
+  -> accum
+foldMapValuesWithIndexL f = foldlValuesWithIndex (\acc key x -> acc <> f key x) mempty
 
 class
   ( Homogeneous row fieldType
