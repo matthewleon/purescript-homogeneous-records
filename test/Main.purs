@@ -1,7 +1,7 @@
 module Test.Main where
 
 import Prelude
-import Record.Homogeneous
+import Record.Homogeneous (foldlValues, foldlValuesWithIndex, mapIndex, mapValuesWithIndex)
 
 import Effect (Effect)
 import Test.Assert (assert')

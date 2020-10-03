@@ -1,9 +1,7 @@
 module Record.Homogeneous.MapIndex where
 
 import Prelude
-import Record as Record
-import Type.Prelude (class IsSymbol, RProxy(RProxy), RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
-import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
+import Type.Prelude (class IsSymbol, RLProxy(RLProxy), RProxy, SProxy(SProxy), reflectSymbol)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Builder (Builder)
