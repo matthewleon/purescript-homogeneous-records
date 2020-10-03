@@ -3,7 +3,7 @@ module Record.Homogeneous.MapValuesWithIndex where
 import Prelude
 
 import Record as Record
-import Type.Prelude (class IsSymbol, RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
+import Type.Prelude (class IsSymbol, RProxy(RProxy), RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
 import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 import Prim.Row as Row
 import Prim.RowList as RL
