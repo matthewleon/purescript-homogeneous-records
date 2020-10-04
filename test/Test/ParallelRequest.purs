@@ -1,9 +1,8 @@
 module Test.ParallelRequest where
 import Prelude
 
-import Control.Monad.Cont.Trans (ContT(..), runContT)
+import Control.Monad.Cont.Trans (ContT(..))
 import Effect (Effect)
-import Effect.Console (logShow)
 
 -- | from https://github.com/purescript/purescript-parallel/blob/master/test/Main.purs
 

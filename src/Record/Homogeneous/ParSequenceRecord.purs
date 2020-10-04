@@ -3,12 +3,12 @@ module Record.Homogeneous.ParSequenceRecord where
 import Prelude
 
 import Record as Record
-import Type.Prelude (class IsSymbol, RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
+import Type.Prelude (class IsSymbol, RLProxy(RLProxy), SProxy(SProxy))
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Builder (Builder)
 import Record.Builder as Builder
-import Control.Parallel
+import Control.Parallel (class Parallel, parallel, sequential)
 
 parSequenceRecord :: forall row row' rl parM m
    . RL.RowToList row rl
