@@ -1,16 +1,16 @@
 module Test.Main where
 
 import Prelude
-import Record.Homogeneous (foldlValues, foldlValuesWithIndex, foldrValues, foldrValuesLazy, foldrValuesWithIndex, mapIndex, mapValuesWithIndex, parSequenceRecord, valuesToUnfoldableLazy)
 
+import Control.Monad.Cont.Trans (ContT(..), runContT)
+import Data.List as List
 import Effect (Effect)
+import Effect.Console (logShow)
+import Effect.Timer (setTimeout)
+import Record.Extra (mapRecord)
+import Record.Homogeneous (foldlValues, foldlValuesWithIndex, foldrValues, foldrValuesLazy, foldrValuesWithIndex, mapIndex, mapValuesWithIndex, parSequenceRecord, valuesToUnfoldableLazy)
 import Test.Assert (assert')
 import Type.Prelude (RProxy(..))
-import Record.Extra (mapRecord)
-import Test.ParallelRequest as Test.ParallelRequest
-import Control.Monad.Cont.Trans (ContT, runContT)
-import Effect.Console (logShow)
-import Data.List as List
 
 type WithoutVals type_ =
   ( a :: type_
@@ -52,15 +52,22 @@ main = do
     valuesToUnfoldableLazy {a: 1, b: 2, c: 3} == List.fromFoldable [1, 2, 3]
 
   let
-    (parSequenceRecord__config :: Reqs String) = { a: "www.purescript.org", b: "try.purescript.org" }
-    (parSequenceRecord__config' :: Reqs (ContT Unit Effect String)) = mapRecord (Test.ParallelRequest.get <<< Test.ParallelRequest.request) parSequenceRecord__config
+    (parSequenceRecord__config :: Reqs String) =
+      { a: "www.purescript.org"
+      , b: "try.purescript.org"
+      }
+
+    parSequenceRecord__process input = ContT \handler -> void $ setTimeout 0 $ handler $ input <> " success"
+
+    (parSequenceRecord__config' :: Reqs (ContT Unit Effect String)) = mapRecord parSequenceRecord__process parSequenceRecord__config
     (parSequenceRecord__config'' :: ContT Unit Effect (Reqs String)) = parSequenceRecord parSequenceRecord__config'
 
   runContT parSequenceRecord__config'' \(result :: Reqs String) -> do
     assert' "parSequenceRecord" $ result ==
-      { a: "<html>\r\n<head><title>301 Moved Permanently</title></head>\r\n<body>\r\n<center><h1>301 Moved Permanently</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n"
-      , b: "<html>\r\n<head><title>301 Moved Permanently</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>301 Moved Permanently</h1></center>\r\n<hr><center>nginx/1.14.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n"
+      { a: "www.purescript.org success"
+      , b: "try.purescript.org success"
       }
     logShow "async test parSequenceRecord finished"
 
   logShow "tests finished"
+
