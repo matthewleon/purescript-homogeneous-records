@@ -6,9 +6,6 @@
     , "control"
     , "assert"
     , "lists"
-    , "parallel"
-    , "record-extra"
-    , "js-timers"
     ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
