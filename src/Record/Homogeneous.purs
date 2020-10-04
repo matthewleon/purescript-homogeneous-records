@@ -2,7 +2,8 @@ module Record.Homogeneous
   ( module Export )
   where
 
-import Record.Homogeneous.FoldlValues (class FoldlValues, foldMapValuesL, foldlValues, foldlValuesImpl) as Export
-import Record.Homogeneous.FoldlValuesWithIndex (class FoldlValuesWithIndex, foldMapValuesWithIndexL, foldlValuesWithIndex, foldlValuesWithIndexImpl) as Export
-import Record.Homogeneous.MapValuesWithIndex (class MapValuesWithIndex, mapValuesWithIndex, mapValuesWithIndexBuilder) as Export
-import Record.Homogeneous.MapIndex (class MapIndex, mapIndex, mapIndexBuilder) as Export
+import Record.Homogeneous.FoldlValues as Export
+import Record.Homogeneous.FoldlValuesWithIndex as Export
+import Record.Homogeneous.MapValuesWithIndex as Export
+import Record.Homogeneous.MapIndex as Export
+import Record.Homogeneous.ParSequenceRecord as Export

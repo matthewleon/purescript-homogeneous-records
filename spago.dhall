@@ -6,6 +6,8 @@
     , "control"
     , "assert"
     , "lists"
+    , "parallel"
+    , "record-extra"
     ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
