@@ -32,7 +32,7 @@ class
   ( Homogeneous row fieldType
   , HomogeneousRowList rowList fieldType
   )
-  <= FoldlValuesWithIndex (rowList :: RL.RowList) (row :: # Type) fieldType
+  <= FoldlValuesWithIndex (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
   where
     foldlValuesWithIndexImpl

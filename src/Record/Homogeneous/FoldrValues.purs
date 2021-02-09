@@ -32,7 +32,7 @@ class
   ( Homogeneous row fieldType
   , HomogeneousRowList rowList fieldType
   )
-  <= FoldrValues (rowList :: RL.RowList) (row :: # Type) fieldType
+  <= FoldrValues (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
   where
     foldrValuesImpl
